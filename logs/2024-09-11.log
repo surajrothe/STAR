@@ -1,0 +1,2118 @@
+2024-09-11 21:20:39 - INFO - Received request to start pipeline with details: {'job_id': 157, 'job_name': 'High Risk Geography (Customer)', 'scenario_ids': ['TS_SCN_01'], 'trigger_by': 'DS_TEAM'}
+2024-09-11 21:20:39 - INFO - Starting customer ID retrieval.
+2024-09-11 21:20:39 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:20:53 - INFO - Successfully executed query: SELECT CUST_ID FROM TS_CUST ORDER BY CUST_ID
+2024-09-11 21:20:53 - INFO - Successfully fetched 125001 customer IDs.
+2024-09-11 21:20:53 - INFO - Starting scenario data retrieval.
+2024-09-11 21:20:53 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:20:53 - INFO - Fetching scenario configuration data
+2024-09-11 21:20:57 - INFO - Successfully executed query: 
+        SELECT
+            TS_SCENARIO.SCENARIO_ID,
+            TS_SCENARIO.SCENARIO_NM,
+            TS_SCENARIO.ALERT_TYPE_ID,
+            TS_SCENARIO.SCENARIO_FOCUS,
+            TS_SCENARIO.SCENARIO_FREQUENCY,
+            TS_SCENARIO.STATUS_ID AS SCENARIO_STATUS_ID,
+            TS_SCENARIO.THRESHOLD_LEVEL_FL,
+            TS_SCN_CONFIG.CONFIG_ID,
+            TS_SCN_CONFIG.SQL_TX,
+            TS_SCN_CONFIG.CONFIG_TYPE_CD,
+            TS_SCN_CONFIG.STATUS_ID AS CONFIG_STATUS_ID,
+            SCENARIO_STATUS.STATUS_NAME AS SCENARIO_STATUS_NAME,
+            CONFIG_STATUS.STATUS_NAME AS CONFIG_STATUS_NAME,
+            THRESHOLD_LEVEL_STATUS.STATUS_NAME AS THRESHOLD_STATUS_NAME
+        FROM TS_SCENARIO
+        LEFT JOIN TS_SCN_CONFIG ON TS_SCENARIO.SCENARIO_ID = TS_SCN_CONFIG.SCENARIO_ID
+        LEFT JOIN TS_STATUS AS SCENARIO_STATUS ON TS_SCENARIO.STATUS_ID = SCENARIO_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS THRESHOLD_LEVEL_STATUS ON TS_SCENARIO.THRESHOLD_LEVEL_FL = THRESHOLD_LEVEL_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS CONFIG_STATUS ON TS_SCN_CONFIG.STATUS_ID = CONFIG_STATUS.STATUS_ID
+        WHERE TS_SCENARIO.SCENARIO_ID IN ('TS_SCN_01')
+        
+2024-09-11 21:20:57 - INFO - Starting threshold data retrieval.
+2024-09-11 21:20:57 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:20:57 - INFO - SQLQueryExecutor initialized successfully.
+2024-09-11 21:20:57 - INFO - Fetching threshold configuration data.
+2024-09-11 21:20:57 - DEBUG - Processing scenario ID: TS_SCN_01
+2024-09-11 21:20:57 - DEBUG - Executing SQL query for scenario ID TS_SCN_01: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:21:01 - INFO - Successfully executed query: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:21:02 - INFO - Threshold data fetching completed successfully.
+2024-09-11 21:21:02 - INFO - Starting Parquet files processing.
+2024-09-11 21:21:02 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:21:02 - INFO - Read 5362 rows from Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:21:02 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:21:02 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:21:02 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:21:02 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:21:02 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:21:06 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:21:07 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:21:07 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:21:14 - INFO - Total alerts found - 135
+2024-09-11 21:21:14 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:21:14 - INFO - Generated alert transaction table with 432 rows.
+2024-09-11 21:21:14 - INFO - Generated evidence report with 135 rows.
+2024-09-11 21:21:14 - INFO - Generated alert customer account mapping table with 136 rows.
+2024-09-11 21:21:15 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:21:15 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:21:19 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('0B40a5c6B5A3CD8', '06dd7CE6ea0e2d6', '06dd7CE6ea0e2d6', '0DFBCA95ec9CFfF', '05E9da4B15b7EA6', '0B375C2BadAe2CB', '01CbDf3bFe7D8A3', '060b64d979DAbA1', '0A7ac50Ba98CCad', '0AaBEf5dfffD84e', '078bEA46bA0BC6F', '0AAe3D11d49CBE5', '06B996BB55799cA', '06a712dC2cA6ae8', '0da2A9D4308d80f', '0abB35CfDe7F2aC', '07F511bEA9CDC97', '071e5Ce80166c39', '04FAF1E1AD52A7b', '0C5D710B18AEd84', '0937Dbd0Cbbffdd', '0B02a8A9A9b3fde', '0d5aa262B76B0ae', '0A7Ac8Cca20bd07', '006cbBcC50b4b30', '08F04AebDdf50fc', '0B4F5fdAa1fCE54', '0ddFC7f937ec91B', '08Fe7cfA000bC0B', '08Fe7cfA000bC0B', '00B48E1AcDa7aBe', '00580a9d24410c9', '0833493fFaE38Ed', '00fdC4ac9F86d61', '0b25D86B607F6Be', '09B9ACAf4f5D9eF', '058ecf8C3dF6142', '0DB2Bc9ba5Eab89', '004b6451564AEa2', '0D3f8e9bDa370a6', '0DC8614f301827c', '0aB49f5bCCEa087', '0b0fd9dD65Ee265', '0CD0CdF35ef556E', '0aEffE31b670aFC', '0c35eaD26f4e445', '0c35eaD26f4e445', '0a5DfCd5Ee6D3D8', '0997B2d1D3D80eC', '0bF0239cb9DaDBd', '016B9849aD4E798', '016B9849aD4E798', '004bfEa885C8624', '02e5abeAfEACF0B', '05Efcc424B869c0', '07CFBE5b3fDc2f3', '0A0eEA6b6aAE4cb', '007015FFFc4E79D', '0e35B207CA155fF', '0De7f1E58dF09ae', '0CBE55eB0B8bBaA', '0D8EEAC91Ee581C', '0e0a6809e171B9d', '00Fc925Fe76539B', '08e4f54ccD6101B', '0A7dC6FF20FbCfF', '09BC6EeFe552B3C', '00221aBC42fEE7C', '0E3F9fEAbfC7CBd', '03dA1FcC2A9DdC0', '05EDe3E17F7835F', '0DD2edFaae7E1D7', '0A5DB1becEcD70F', '0A5DB1becEcD70F', '04B97eF0e9D4Cbb', '04B97eF0e9D4Cbb', '0ecC844B5daf0E7', '0bfa78d07c95b5D', '0bfa78d07c95b5D', '09FeB06C5ec55fe', '0a0FD5e9aA2Bdea', '0d6ae263Bb10F4D', '0c9dd6bF1F7e51c', '09b2Ed4Eb7E7403', '056236f278bbaCf', '0d7d5F8F1Cd4bDF', '0E986a42943df0C', '0604667a19cc295', '0a5AeB5f36594d9', '0Cc1Ec3AdcFDdF0', '0Cc1Ec3AdcFDdF0', '09145C57a50d43a', '0b5bCCD3Ea15dA9', '05A6ccAcD39449B', '01B53a2C3Ed17Bc', '03f18d4a32c19BD', '04b3ee8A0bf7eB8', '0ddC954D011B1D9', '0740dAcEF0Ca09a', '06924cBFF36d8CD', '0Ac525AbdcdD8CE', '0dc6782023a1A8b', '0Abc682f1Ecf6bD', '0b4B64FCFcea4ED', '0C92E22951C5e5f', '0C36BE370ffa3BC', '0EaedFBAc2838bb', '0882045A0Fc5b7C', '0eD0c78E931E0A8', '0eD0c78E931E0A8', '0b6Bc1eFE726c1D', '0e6Eab3585f7c5c', '0abC0C2F7A972AF', '0C9E5FbfbbC20fA', '00A0EB2EaE9D9dC', '0C2BEF45fF21bdc', '0dB1b7b4f5bCa0D', '0aDfBFCF9efaEDd', '0cEEC410fc9CB8C', '07de68dcdE4F3CA', '00AAbf1DA4Db69A', '0BC0B132EDFeEed', '0CD33B2AB465cb7', '0531bb7BcFF36ec', '02a6Fd62C9Adf06', '0D9c70550c8cA8D', '0D7E5ed389B7c5b', '06fCeb0de1B3e03', '039Ce9Ef93d8c45', '0DDe584bddCE89e', '048310f80bF52Ab', '07CbD8625c5A843', '0D1fAE5bADecfF4', '05Cf2b41b3cCF3B', '050Ce2eFed1FE2c')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:21:19 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:21:24 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:21:24 - INFO - Scenario - High Risk Geography (Customer) | Value Error occurred while fetching country risk flags invalid literal for int() with base 10: 'UNITED STATES'.
+2024-09-11 21:21:24 - INFO - Scenario - High Risk Geography (Customer) | Error occurred in Country Risk Scoring Module 'NoneType' object has no attribute 'apply'.
+2024-09-11 21:21:24 - ERROR - Error during alert risk scoring: 'Alert_ID'
+2024-09-11 21:21:24 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_0.parquet with scenario ID TS_SCN_01
+2024-09-11 21:21:24 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:21:24 - INFO - Read 4707 rows from Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:21:24 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:21:24 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:21:24 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:21:24 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:21:24 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:21:28 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:21:29 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:21:29 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:21:35 - INFO - Total alerts found - 118
+2024-09-11 21:21:35 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:21:35 - INFO - Generated alert transaction table with 383 rows.
+2024-09-11 21:21:36 - INFO - Generated evidence report with 118 rows.
+2024-09-11 21:21:36 - INFO - Generated alert customer account mapping table with 121 rows.
+2024-09-11 21:21:36 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:21:36 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:22:27 - INFO - Received request to start pipeline with details: {'job_id': 157, 'job_name': 'High Risk Geography (Customer)', 'scenario_ids': ['TS_SCN_01'], 'trigger_by': 'DS_TEAM'}
+2024-09-11 21:22:27 - INFO - Starting customer ID retrieval.
+2024-09-11 21:22:27 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:22:40 - INFO - Successfully executed query: SELECT CUST_ID FROM TS_CUST ORDER BY CUST_ID
+2024-09-11 21:22:40 - INFO - Successfully fetched 125001 customer IDs.
+2024-09-11 21:22:40 - INFO - Starting scenario data retrieval.
+2024-09-11 21:22:40 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:22:40 - INFO - Fetching scenario configuration data
+2024-09-11 21:22:43 - INFO - Successfully executed query: 
+        SELECT
+            TS_SCENARIO.SCENARIO_ID,
+            TS_SCENARIO.SCENARIO_NM,
+            TS_SCENARIO.ALERT_TYPE_ID,
+            TS_SCENARIO.SCENARIO_FOCUS,
+            TS_SCENARIO.SCENARIO_FREQUENCY,
+            TS_SCENARIO.STATUS_ID AS SCENARIO_STATUS_ID,
+            TS_SCENARIO.THRESHOLD_LEVEL_FL,
+            TS_SCN_CONFIG.CONFIG_ID,
+            TS_SCN_CONFIG.SQL_TX,
+            TS_SCN_CONFIG.CONFIG_TYPE_CD,
+            TS_SCN_CONFIG.STATUS_ID AS CONFIG_STATUS_ID,
+            SCENARIO_STATUS.STATUS_NAME AS SCENARIO_STATUS_NAME,
+            CONFIG_STATUS.STATUS_NAME AS CONFIG_STATUS_NAME,
+            THRESHOLD_LEVEL_STATUS.STATUS_NAME AS THRESHOLD_STATUS_NAME
+        FROM TS_SCENARIO
+        LEFT JOIN TS_SCN_CONFIG ON TS_SCENARIO.SCENARIO_ID = TS_SCN_CONFIG.SCENARIO_ID
+        LEFT JOIN TS_STATUS AS SCENARIO_STATUS ON TS_SCENARIO.STATUS_ID = SCENARIO_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS THRESHOLD_LEVEL_STATUS ON TS_SCENARIO.THRESHOLD_LEVEL_FL = THRESHOLD_LEVEL_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS CONFIG_STATUS ON TS_SCN_CONFIG.STATUS_ID = CONFIG_STATUS.STATUS_ID
+        WHERE TS_SCENARIO.SCENARIO_ID IN ('TS_SCN_01')
+        
+2024-09-11 21:22:44 - INFO - Starting threshold data retrieval.
+2024-09-11 21:22:44 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:22:44 - INFO - SQLQueryExecutor initialized successfully.
+2024-09-11 21:22:44 - INFO - Fetching threshold configuration data.
+2024-09-11 21:22:44 - DEBUG - Processing scenario ID: TS_SCN_01
+2024-09-11 21:22:44 - DEBUG - Executing SQL query for scenario ID TS_SCN_01: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:22:47 - INFO - Successfully executed query: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:22:48 - INFO - Threshold data fetching completed successfully.
+2024-09-11 21:22:48 - INFO - Starting Parquet files processing.
+2024-09-11 21:22:48 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:22:48 - INFO - Read 5362 rows from Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:22:48 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:22:48 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:22:48 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:22:48 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:22:48 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:22:52 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:22:52 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:22:52 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:23:00 - INFO - Total alerts found - 135
+2024-09-11 21:23:00 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:23:00 - INFO - Generated alert transaction table with 432 rows.
+2024-09-11 21:23:00 - INFO - Generated evidence report with 135 rows.
+2024-09-11 21:23:00 - INFO - Generated alert customer account mapping table with 136 rows.
+2024-09-11 21:23:00 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:23:00 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:23:05 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('0B40a5c6B5A3CD8', '06dd7CE6ea0e2d6', '06dd7CE6ea0e2d6', '0DFBCA95ec9CFfF', '05E9da4B15b7EA6', '0B375C2BadAe2CB', '01CbDf3bFe7D8A3', '060b64d979DAbA1', '0A7ac50Ba98CCad', '0AaBEf5dfffD84e', '078bEA46bA0BC6F', '0AAe3D11d49CBE5', '06B996BB55799cA', '06a712dC2cA6ae8', '0da2A9D4308d80f', '0abB35CfDe7F2aC', '07F511bEA9CDC97', '071e5Ce80166c39', '04FAF1E1AD52A7b', '0C5D710B18AEd84', '0937Dbd0Cbbffdd', '0B02a8A9A9b3fde', '0d5aa262B76B0ae', '0A7Ac8Cca20bd07', '006cbBcC50b4b30', '08F04AebDdf50fc', '0B4F5fdAa1fCE54', '0ddFC7f937ec91B', '08Fe7cfA000bC0B', '08Fe7cfA000bC0B', '00B48E1AcDa7aBe', '00580a9d24410c9', '0833493fFaE38Ed', '00fdC4ac9F86d61', '0b25D86B607F6Be', '09B9ACAf4f5D9eF', '058ecf8C3dF6142', '0DB2Bc9ba5Eab89', '004b6451564AEa2', '0D3f8e9bDa370a6', '0DC8614f301827c', '0aB49f5bCCEa087', '0b0fd9dD65Ee265', '0CD0CdF35ef556E', '0aEffE31b670aFC', '0c35eaD26f4e445', '0c35eaD26f4e445', '0a5DfCd5Ee6D3D8', '0997B2d1D3D80eC', '0bF0239cb9DaDBd', '016B9849aD4E798', '016B9849aD4E798', '004bfEa885C8624', '02e5abeAfEACF0B', '05Efcc424B869c0', '07CFBE5b3fDc2f3', '0A0eEA6b6aAE4cb', '007015FFFc4E79D', '0e35B207CA155fF', '0De7f1E58dF09ae', '0CBE55eB0B8bBaA', '0D8EEAC91Ee581C', '0e0a6809e171B9d', '00Fc925Fe76539B', '08e4f54ccD6101B', '0A7dC6FF20FbCfF', '09BC6EeFe552B3C', '00221aBC42fEE7C', '0E3F9fEAbfC7CBd', '03dA1FcC2A9DdC0', '05EDe3E17F7835F', '0DD2edFaae7E1D7', '0A5DB1becEcD70F', '0A5DB1becEcD70F', '04B97eF0e9D4Cbb', '04B97eF0e9D4Cbb', '0ecC844B5daf0E7', '0bfa78d07c95b5D', '0bfa78d07c95b5D', '09FeB06C5ec55fe', '0a0FD5e9aA2Bdea', '0d6ae263Bb10F4D', '0c9dd6bF1F7e51c', '09b2Ed4Eb7E7403', '056236f278bbaCf', '0d7d5F8F1Cd4bDF', '0E986a42943df0C', '0604667a19cc295', '0a5AeB5f36594d9', '0Cc1Ec3AdcFDdF0', '0Cc1Ec3AdcFDdF0', '09145C57a50d43a', '0b5bCCD3Ea15dA9', '05A6ccAcD39449B', '01B53a2C3Ed17Bc', '03f18d4a32c19BD', '04b3ee8A0bf7eB8', '0ddC954D011B1D9', '0740dAcEF0Ca09a', '06924cBFF36d8CD', '0Ac525AbdcdD8CE', '0dc6782023a1A8b', '0Abc682f1Ecf6bD', '0b4B64FCFcea4ED', '0C92E22951C5e5f', '0C36BE370ffa3BC', '0EaedFBAc2838bb', '0882045A0Fc5b7C', '0eD0c78E931E0A8', '0eD0c78E931E0A8', '0b6Bc1eFE726c1D', '0e6Eab3585f7c5c', '0abC0C2F7A972AF', '0C9E5FbfbbC20fA', '00A0EB2EaE9D9dC', '0C2BEF45fF21bdc', '0dB1b7b4f5bCa0D', '0aDfBFCF9efaEDd', '0cEEC410fc9CB8C', '07de68dcdE4F3CA', '00AAbf1DA4Db69A', '0BC0B132EDFeEed', '0CD33B2AB465cb7', '0531bb7BcFF36ec', '02a6Fd62C9Adf06', '0D9c70550c8cA8D', '0D7E5ed389B7c5b', '06fCeb0de1B3e03', '039Ce9Ef93d8c45', '0DDe584bddCE89e', '048310f80bF52Ab', '07CbD8625c5A843', '0D1fAE5bADecfF4', '05Cf2b41b3cCF3B', '050Ce2eFed1FE2c')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:23:06 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:23:10 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:23:10 - INFO - Scenario - High Risk Geography (Customer) | Value Error occurred while fetching country risk flags invalid literal for int() with base 10: 'UNITED STATES'.
+2024-09-11 21:23:10 - INFO - Scenario - High Risk Geography (Customer) | Error occurred in Country Risk Scoring Module 'NoneType' object has no attribute 'apply'.
+2024-09-11 21:23:10 - ERROR - Error during alert risk scoring: 'Alert_ID'
+2024-09-11 21:23:10 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_0.parquet with scenario ID TS_SCN_01
+2024-09-11 21:23:10 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:23:10 - INFO - Read 4707 rows from Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:23:10 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:23:10 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:23:10 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:23:10 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:23:10 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:23:15 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:23:15 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:23:15 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:23:21 - INFO - Total alerts found - 118
+2024-09-11 21:23:21 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:23:21 - INFO - Generated alert transaction table with 383 rows.
+2024-09-11 21:23:22 - INFO - Generated evidence report with 118 rows.
+2024-09-11 21:23:22 - INFO - Generated alert customer account mapping table with 121 rows.
+2024-09-11 21:23:22 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:23:22 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:23:27 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('0F7Ba1EAB1A69e9', '106A964B2233D3B', '106A964B2233D3B', '13FeBAD3EAADdc2', '144Fd0066f2Cdee', '0FDfFFbCAA9F15D', '1b4FfcC14dE57D3', '103EBB01CDeF80C', '0fD3144EFBEFD46', '1b7D8A6aCfBa91A', '10d8DeF50C3e350', '10DaEa7eCe2e2F2', '11dDe4EcaB0634e', '12bd5A2346fA0dE', '12bd5A2346fA0dE', '19EDC71cca25bE1', '15FE6ECe8ab8b06', '0Fb7Bf2c34DC549', '15b14a383cAa17F', '11aB71ddBe6de0b', '11B2df21ECD246e', '1046Ff76dFbE2D0', '170dCc273d7c893', '1380d4e2C051E62', '15e3C3cCcE4AA66', '1a3B8A3A6060f69', '12fFBEb0a2Fc7cb', '0FcCbfcA8C0AF56', '0FcCbfcA8C0AF56', '14BF8f6CCe268AE', '0fD85CB0D04ADbb', '1a589a5B6F4AEAD', '1aEB2AeF3361d7a', '1Aff21dEab2CDCA', '1454fA2BfebDE47', '180b0a6Ca9F5b92', '13AC66c3eeae074', '163B2Ae49cAe19F', '163B2Ae49cAe19F', '18eBa6bDDD491Af', '133e1cDaAe37cC9', '15efC009c0aD6ab', '0FD46c324A6afEB', '1bc4AfE0DfB0E6e', '1644a6BCc48dAcd', '13fc26A5602e662', '153795a44Bb7ecd', '153795a44Bb7ecd', '14Fcaaa6d0f1FE0', '115087d745fda4A', '11C24b2DD93BDe2', '15fCe7333a5b6dB', '0FBfa0BCCA35b11', '0FBfa0BCCA35b11', '18f2973d8c0cf6A', '0FBff16c2DABFeC', '13E8dcFBe4f4bc5', '13E8dcFBe4f4bc5', '19c1F7A40D8b5f3', '1443800Cce2cec2', '179547AE2c7AB9c', '182fC32cdcF1bf1', '11C2d6afaCfCdFA', '1A2Cfe8Dd75AaBe', '19fcE078e18c5cd', '1B95e4aDC799B7D', '1B13Ad6Fad77062', '1625f2CDaC8f80B', '0FDB7430DB42CBF', '1Bca63Bdfe5A8bf', '16F0a1BBaC2DDbc', '1a416CAcCE6d2EE', '1213dF4F96d5B9a', '163d4983D9ef0F0', '1a2db9Ae2fD38e1', '1be23c62a002c9F', '103B22eCdF4edef', '128e95FaAf3b7a5', '1bad8CA1CFeccf1', '11EDb0Bb29bacDA', '1A3FBcBEA70dD0A', '166a3aEAF18CAA4', '0F3EF6daDbAC57f', '18ac7e9C967c8BC', '131b9FF959c44bA', '160046fE6BABF9b', '18C42cCF2Dda2f4', '18C42cCF2Dda2f4', '186f7cCcDdD1fd7', '15EdfA213DFf5B1', '12cbA0cd719C7Ae', '0F1C1D61a4bbd4f', '1Adf414b6Ce7E59', '12CE6FbAdAd5eBD', '0ef8fBBEb42b6c9', '14d4a15a9C5d2B8', '0fb9544dCDEaCEd', '11fea68edEDDCeE', '18c5f8FB1AB86F1', '1226DbE9968ac65', '19EA34BBAAAbC60', '0F0d8D192BF46fa', '17CB5ea86b6d6FD', '1AdAFc832fe089f', '16e7a6e9B4e615C', '13Bb3E7aE0A5bcF', '13d8b85840dEba1', '18Ce15E902a53BA', '162B43f65EFBBb3', '1B1b8ACE83B9bBB', '198dEFbF2db8DC1', '0EEEfeFBf3C7bdc', '18E2bF3aaBC6D7F', '1BAc2fac3Be59d0', '0f6Cfd3f840f846', '1a7A9BD7Fc2A7Aa', '14b4C114aAe0ffd', '0fD13CeCBFEBdaf')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:23:27 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:23:32 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:23:32 - INFO - Scenario - High Risk Geography (Customer) | Value Error occurred while fetching country risk flags invalid literal for int() with base 10: 'UNITED STATES'.
+2024-09-11 21:23:32 - INFO - Scenario - High Risk Geography (Customer) | Error occurred in Country Risk Scoring Module 'NoneType' object has no attribute 'apply'.
+2024-09-11 21:23:32 - ERROR - Error during alert risk scoring: 'Alert_ID'
+2024-09-11 21:23:32 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_1.parquet with scenario ID TS_SCN_01
+2024-09-11 21:23:32 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_10.parquet
+2024-09-11 21:23:32 - INFO - Read 1096 rows from Parquet_Data/157/trxn_data_chunk_10.parquet
+2024-09-11 21:23:32 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:23:32 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:23:32 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:23:32 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:23:32 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:21 - INFO - Received request to start pipeline with details: {'job_id': 157, 'job_name': 'High Risk Geography (Customer)', 'scenario_ids': ['TS_SCN_01'], 'trigger_by': 'DS_TEAM'}
+2024-09-11 21:25:21 - INFO - Starting customer ID retrieval.
+2024-09-11 21:25:21 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:32 - INFO - Successfully executed query: SELECT CUST_ID FROM TS_CUST ORDER BY CUST_ID
+2024-09-11 21:25:32 - INFO - Successfully fetched 125001 customer IDs.
+2024-09-11 21:25:32 - INFO - Starting scenario data retrieval.
+2024-09-11 21:25:32 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:32 - INFO - Fetching scenario configuration data
+2024-09-11 21:25:35 - INFO - Successfully executed query: 
+        SELECT
+            TS_SCENARIO.SCENARIO_ID,
+            TS_SCENARIO.SCENARIO_NM,
+            TS_SCENARIO.ALERT_TYPE_ID,
+            TS_SCENARIO.SCENARIO_FOCUS,
+            TS_SCENARIO.SCENARIO_FREQUENCY,
+            TS_SCENARIO.STATUS_ID AS SCENARIO_STATUS_ID,
+            TS_SCENARIO.THRESHOLD_LEVEL_FL,
+            TS_SCN_CONFIG.CONFIG_ID,
+            TS_SCN_CONFIG.SQL_TX,
+            TS_SCN_CONFIG.CONFIG_TYPE_CD,
+            TS_SCN_CONFIG.STATUS_ID AS CONFIG_STATUS_ID,
+            SCENARIO_STATUS.STATUS_NAME AS SCENARIO_STATUS_NAME,
+            CONFIG_STATUS.STATUS_NAME AS CONFIG_STATUS_NAME,
+            THRESHOLD_LEVEL_STATUS.STATUS_NAME AS THRESHOLD_STATUS_NAME
+        FROM TS_SCENARIO
+        LEFT JOIN TS_SCN_CONFIG ON TS_SCENARIO.SCENARIO_ID = TS_SCN_CONFIG.SCENARIO_ID
+        LEFT JOIN TS_STATUS AS SCENARIO_STATUS ON TS_SCENARIO.STATUS_ID = SCENARIO_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS THRESHOLD_LEVEL_STATUS ON TS_SCENARIO.THRESHOLD_LEVEL_FL = THRESHOLD_LEVEL_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS CONFIG_STATUS ON TS_SCN_CONFIG.STATUS_ID = CONFIG_STATUS.STATUS_ID
+        WHERE TS_SCENARIO.SCENARIO_ID IN ('TS_SCN_01')
+        
+2024-09-11 21:25:36 - INFO - Starting threshold data retrieval.
+2024-09-11 21:25:36 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:36 - INFO - SQLQueryExecutor initialized successfully.
+2024-09-11 21:25:36 - INFO - Fetching threshold configuration data.
+2024-09-11 21:25:36 - DEBUG - Processing scenario ID: TS_SCN_01
+2024-09-11 21:25:36 - DEBUG - Executing SQL query for scenario ID TS_SCN_01: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:25:40 - INFO - Successfully executed query: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-11 21:25:40 - INFO - Threshold data fetching completed successfully.
+2024-09-11 21:25:40 - INFO - Starting Parquet files processing.
+2024-09-11 21:25:40 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:25:40 - INFO - Read 5362 rows from Parquet_Data/157/trxn_data_chunk_0.parquet
+2024-09-11 21:25:40 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:25:40 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:25:40 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:25:40 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:25:40 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:45 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:25:45 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:25:45 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:25:52 - INFO - Total alerts found - 135
+2024-09-11 21:25:52 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:25:52 - INFO - Generated alert transaction table with 432 rows.
+2024-09-11 21:25:52 - INFO - Generated evidence report with 135 rows.
+2024-09-11 21:25:52 - INFO - Generated alert customer account mapping table with 136 rows.
+2024-09-11 21:25:52 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:25:52 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:25:57 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('0B40a5c6B5A3CD8', '06dd7CE6ea0e2d6', '06dd7CE6ea0e2d6', '0DFBCA95ec9CFfF', '05E9da4B15b7EA6', '0B375C2BadAe2CB', '01CbDf3bFe7D8A3', '060b64d979DAbA1', '0A7ac50Ba98CCad', '0AaBEf5dfffD84e', '078bEA46bA0BC6F', '0AAe3D11d49CBE5', '06B996BB55799cA', '06a712dC2cA6ae8', '0da2A9D4308d80f', '0abB35CfDe7F2aC', '07F511bEA9CDC97', '071e5Ce80166c39', '04FAF1E1AD52A7b', '0C5D710B18AEd84', '0937Dbd0Cbbffdd', '0B02a8A9A9b3fde', '0d5aa262B76B0ae', '0A7Ac8Cca20bd07', '006cbBcC50b4b30', '08F04AebDdf50fc', '0B4F5fdAa1fCE54', '0ddFC7f937ec91B', '08Fe7cfA000bC0B', '08Fe7cfA000bC0B', '00B48E1AcDa7aBe', '00580a9d24410c9', '0833493fFaE38Ed', '00fdC4ac9F86d61', '0b25D86B607F6Be', '09B9ACAf4f5D9eF', '058ecf8C3dF6142', '0DB2Bc9ba5Eab89', '004b6451564AEa2', '0D3f8e9bDa370a6', '0DC8614f301827c', '0aB49f5bCCEa087', '0b0fd9dD65Ee265', '0CD0CdF35ef556E', '0aEffE31b670aFC', '0c35eaD26f4e445', '0c35eaD26f4e445', '0a5DfCd5Ee6D3D8', '0997B2d1D3D80eC', '0bF0239cb9DaDBd', '016B9849aD4E798', '016B9849aD4E798', '004bfEa885C8624', '02e5abeAfEACF0B', '05Efcc424B869c0', '07CFBE5b3fDc2f3', '0A0eEA6b6aAE4cb', '007015FFFc4E79D', '0e35B207CA155fF', '0De7f1E58dF09ae', '0CBE55eB0B8bBaA', '0D8EEAC91Ee581C', '0e0a6809e171B9d', '00Fc925Fe76539B', '08e4f54ccD6101B', '0A7dC6FF20FbCfF', '09BC6EeFe552B3C', '00221aBC42fEE7C', '0E3F9fEAbfC7CBd', '03dA1FcC2A9DdC0', '05EDe3E17F7835F', '0DD2edFaae7E1D7', '0A5DB1becEcD70F', '0A5DB1becEcD70F', '04B97eF0e9D4Cbb', '04B97eF0e9D4Cbb', '0ecC844B5daf0E7', '0bfa78d07c95b5D', '0bfa78d07c95b5D', '09FeB06C5ec55fe', '0a0FD5e9aA2Bdea', '0d6ae263Bb10F4D', '0c9dd6bF1F7e51c', '09b2Ed4Eb7E7403', '056236f278bbaCf', '0d7d5F8F1Cd4bDF', '0E986a42943df0C', '0604667a19cc295', '0a5AeB5f36594d9', '0Cc1Ec3AdcFDdF0', '0Cc1Ec3AdcFDdF0', '09145C57a50d43a', '0b5bCCD3Ea15dA9', '05A6ccAcD39449B', '01B53a2C3Ed17Bc', '03f18d4a32c19BD', '04b3ee8A0bf7eB8', '0ddC954D011B1D9', '0740dAcEF0Ca09a', '06924cBFF36d8CD', '0Ac525AbdcdD8CE', '0dc6782023a1A8b', '0Abc682f1Ecf6bD', '0b4B64FCFcea4ED', '0C92E22951C5e5f', '0C36BE370ffa3BC', '0EaedFBAc2838bb', '0882045A0Fc5b7C', '0eD0c78E931E0A8', '0eD0c78E931E0A8', '0b6Bc1eFE726c1D', '0e6Eab3585f7c5c', '0abC0C2F7A972AF', '0C9E5FbfbbC20fA', '00A0EB2EaE9D9dC', '0C2BEF45fF21bdc', '0dB1b7b4f5bCa0D', '0aDfBFCF9efaEDd', '0cEEC410fc9CB8C', '07de68dcdE4F3CA', '00AAbf1DA4Db69A', '0BC0B132EDFeEed', '0CD33B2AB465cb7', '0531bb7BcFF36ec', '02a6Fd62C9Adf06', '0D9c70550c8cA8D', '0D7E5ed389B7c5b', '06fCeb0de1B3e03', '039Ce9Ef93d8c45', '0DDe584bddCE89e', '048310f80bF52Ab', '07CbD8625c5A843', '0D1fAE5bADecfF4', '05Cf2b41b3cCF3B', '050Ce2eFed1FE2c')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:25:57 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:02 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:26:02 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:26:02 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:26:02 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_0.parquet with scenario ID TS_SCN_01
+2024-09-11 21:26:02 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:26:02 - INFO - Read 4707 rows from Parquet_Data/157/trxn_data_chunk_1.parquet
+2024-09-11 21:26:02 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:26:02 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:26:02 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:26:02 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:26:02 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:07 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:26:07 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:26:07 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:26:13 - INFO - Total alerts found - 118
+2024-09-11 21:26:13 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:26:13 - INFO - Generated alert transaction table with 383 rows.
+2024-09-11 21:26:14 - INFO - Generated evidence report with 118 rows.
+2024-09-11 21:26:14 - INFO - Generated alert customer account mapping table with 121 rows.
+2024-09-11 21:26:14 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:14 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:26:19 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('0F7Ba1EAB1A69e9', '106A964B2233D3B', '106A964B2233D3B', '13FeBAD3EAADdc2', '144Fd0066f2Cdee', '0FDfFFbCAA9F15D', '1b4FfcC14dE57D3', '103EBB01CDeF80C', '0fD3144EFBEFD46', '1b7D8A6aCfBa91A', '10d8DeF50C3e350', '10DaEa7eCe2e2F2', '11dDe4EcaB0634e', '12bd5A2346fA0dE', '12bd5A2346fA0dE', '19EDC71cca25bE1', '15FE6ECe8ab8b06', '0Fb7Bf2c34DC549', '15b14a383cAa17F', '11aB71ddBe6de0b', '11B2df21ECD246e', '1046Ff76dFbE2D0', '170dCc273d7c893', '1380d4e2C051E62', '15e3C3cCcE4AA66', '1a3B8A3A6060f69', '12fFBEb0a2Fc7cb', '0FcCbfcA8C0AF56', '0FcCbfcA8C0AF56', '14BF8f6CCe268AE', '0fD85CB0D04ADbb', '1a589a5B6F4AEAD', '1aEB2AeF3361d7a', '1Aff21dEab2CDCA', '1454fA2BfebDE47', '180b0a6Ca9F5b92', '13AC66c3eeae074', '163B2Ae49cAe19F', '163B2Ae49cAe19F', '18eBa6bDDD491Af', '133e1cDaAe37cC9', '15efC009c0aD6ab', '0FD46c324A6afEB', '1bc4AfE0DfB0E6e', '1644a6BCc48dAcd', '13fc26A5602e662', '153795a44Bb7ecd', '153795a44Bb7ecd', '14Fcaaa6d0f1FE0', '115087d745fda4A', '11C24b2DD93BDe2', '15fCe7333a5b6dB', '0FBfa0BCCA35b11', '0FBfa0BCCA35b11', '18f2973d8c0cf6A', '0FBff16c2DABFeC', '13E8dcFBe4f4bc5', '13E8dcFBe4f4bc5', '19c1F7A40D8b5f3', '1443800Cce2cec2', '179547AE2c7AB9c', '182fC32cdcF1bf1', '11C2d6afaCfCdFA', '1A2Cfe8Dd75AaBe', '19fcE078e18c5cd', '1B95e4aDC799B7D', '1B13Ad6Fad77062', '1625f2CDaC8f80B', '0FDB7430DB42CBF', '1Bca63Bdfe5A8bf', '16F0a1BBaC2DDbc', '1a416CAcCE6d2EE', '1213dF4F96d5B9a', '163d4983D9ef0F0', '1a2db9Ae2fD38e1', '1be23c62a002c9F', '103B22eCdF4edef', '128e95FaAf3b7a5', '1bad8CA1CFeccf1', '11EDb0Bb29bacDA', '1A3FBcBEA70dD0A', '166a3aEAF18CAA4', '0F3EF6daDbAC57f', '18ac7e9C967c8BC', '131b9FF959c44bA', '160046fE6BABF9b', '18C42cCF2Dda2f4', '18C42cCF2Dda2f4', '186f7cCcDdD1fd7', '15EdfA213DFf5B1', '12cbA0cd719C7Ae', '0F1C1D61a4bbd4f', '1Adf414b6Ce7E59', '12CE6FbAdAd5eBD', '0ef8fBBEb42b6c9', '14d4a15a9C5d2B8', '0fb9544dCDEaCEd', '11fea68edEDDCeE', '18c5f8FB1AB86F1', '1226DbE9968ac65', '19EA34BBAAAbC60', '0F0d8D192BF46fa', '17CB5ea86b6d6FD', '1AdAFc832fe089f', '16e7a6e9B4e615C', '13Bb3E7aE0A5bcF', '13d8b85840dEba1', '18Ce15E902a53BA', '162B43f65EFBBb3', '1B1b8ACE83B9bBB', '198dEFbF2db8DC1', '0EEEfeFBf3C7bdc', '18E2bF3aaBC6D7F', '1BAc2fac3Be59d0', '0f6Cfd3f840f846', '1a7A9BD7Fc2A7Aa', '14b4C114aAe0ffd', '0fD13CeCBFEBdaf')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:26:19 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:24 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:26:24 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:26:24 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:26:24 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_1.parquet with scenario ID TS_SCN_01
+2024-09-11 21:26:24 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_10.parquet
+2024-09-11 21:26:24 - INFO - Read 1096 rows from Parquet_Data/157/trxn_data_chunk_10.parquet
+2024-09-11 21:26:24 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:26:24 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:26:24 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:26:24 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:26:24 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:28 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:26:29 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:26:29 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:26:29 - INFO - Total alerts found - 1
+2024-09-11 21:26:29 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:26:29 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:26:29 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:26:29 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:26:29 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:29 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:26:33 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('8F78fe9DdAE445B')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:26:34 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:38 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:26:39 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:26:39 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:26:39 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_10.parquet with scenario ID TS_SCN_01
+2024-09-11 21:26:39 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_11.parquet
+2024-09-11 21:26:39 - INFO - Read 1084 rows from Parquet_Data/157/trxn_data_chunk_11.parquet
+2024-09-11 21:26:39 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:26:39 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:26:39 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:26:39 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:26:39 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:43 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:26:43 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:26:43 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:26:43 - INFO - Total alerts found - 2
+2024-09-11 21:26:43 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:26:43 - INFO - Generated alert transaction table with 7 rows.
+2024-09-11 21:26:43 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:26:43 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:26:43 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:43 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:26:47 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('A397cceeE66fEFc', 'A397cceeE66fEFc')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:26:48 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:52 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:26:52 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:26:52 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:26:52 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_11.parquet with scenario ID TS_SCN_01
+2024-09-11 21:26:52 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_12.parquet
+2024-09-11 21:26:52 - INFO - Read 1115 rows from Parquet_Data/157/trxn_data_chunk_12.parquet
+2024-09-11 21:26:52 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:26:52 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:26:52 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:26:52 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:26:52 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:57 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:26:57 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:26:57 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:26:57 - INFO - Total alerts found - 1
+2024-09-11 21:26:57 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:26:57 - INFO - Generated alert transaction table with 4 rows.
+2024-09-11 21:26:57 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:26:57 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:26:57 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:26:57 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:27:02 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('A8cAb4FAe244d1C')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:27:02 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:06 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:27:07 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:27:07 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:27:07 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_12.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:07 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_13.parquet
+2024-09-11 21:27:07 - INFO - Read 1026 rows from Parquet_Data/157/trxn_data_chunk_13.parquet
+2024-09-11 21:27:07 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:07 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:07 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:07 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:07 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:11 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:11 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:11 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:11 - INFO - Total alerts found - 1
+2024-09-11 21:27:11 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:11 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:27:11 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:27:11 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:27:11 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:11 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:27:15 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('b0A03CE61E7BF47')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:27:16 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:20 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:27:20 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:27:20 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:27:20 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_13.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:20 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_14.parquet
+2024-09-11 21:27:20 - INFO - Read 1016 rows from Parquet_Data/157/trxn_data_chunk_14.parquet
+2024-09-11 21:27:20 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:20 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:20 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:20 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:20 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:24 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:25 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:25 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:25 - INFO - No Alerts found!
+2024-09-11 21:27:25 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:25 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_14.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:25 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_15.parquet
+2024-09-11 21:27:25 - INFO - Read 1111 rows from Parquet_Data/157/trxn_data_chunk_15.parquet
+2024-09-11 21:27:25 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:25 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:25 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:25 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:25 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:29 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:29 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:29 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:29 - INFO - Total alerts found - 2
+2024-09-11 21:27:29 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:29 - INFO - Generated alert transaction table with 7 rows.
+2024-09-11 21:27:29 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:27:29 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:27:29 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:29 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:27:33 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('BEb5A485Ca1e99a', 'bfba8f1B0aed987')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:27:34 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:38 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:27:38 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:27:38 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:27:38 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_15.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:38 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_16.parquet
+2024-09-11 21:27:38 - INFO - Read 1077 rows from Parquet_Data/157/trxn_data_chunk_16.parquet
+2024-09-11 21:27:38 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:38 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:38 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:38 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:38 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:43 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:43 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:43 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:43 - INFO - No Alerts found!
+2024-09-11 21:27:43 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:43 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_16.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:43 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_17.parquet
+2024-09-11 21:27:43 - INFO - Read 1096 rows from Parquet_Data/157/trxn_data_chunk_17.parquet
+2024-09-11 21:27:43 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:43 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:43 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:43 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:43 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:47 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:47 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:47 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:47 - INFO - No Alerts found!
+2024-09-11 21:27:47 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:47 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_17.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:47 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_18.parquet
+2024-09-11 21:27:47 - INFO - Read 1051 rows from Parquet_Data/157/trxn_data_chunk_18.parquet
+2024-09-11 21:27:47 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:47 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:47 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:47 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:47 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:52 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:52 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:52 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:52 - INFO - No Alerts found!
+2024-09-11 21:27:52 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:52 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_18.parquet with scenario ID TS_SCN_01
+2024-09-11 21:27:52 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_19.parquet
+2024-09-11 21:27:52 - INFO - Read 1090 rows from Parquet_Data/157/trxn_data_chunk_19.parquet
+2024-09-11 21:27:52 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:27:52 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:27:52 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:27:52 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:27:52 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:56 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:27:56 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:27:56 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:27:57 - INFO - Total alerts found - 2
+2024-09-11 21:27:57 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:27:57 - INFO - Generated alert transaction table with 6 rows.
+2024-09-11 21:27:57 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:27:57 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:27:57 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:27:57 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:28:01 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('db91e5AAaF13a46', 'DAF5f7bBd3333c7')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:28:01 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:05 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:28:06 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:28:06 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:28:06 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_19.parquet with scenario ID TS_SCN_01
+2024-09-11 21:28:06 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_2.parquet
+2024-09-11 21:28:06 - INFO - Read 1026 rows from Parquet_Data/157/trxn_data_chunk_2.parquet
+2024-09-11 21:28:06 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:28:06 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:28:06 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:28:06 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:28:06 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:10 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:28:10 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:28:10 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:28:10 - INFO - No Alerts found!
+2024-09-11 21:28:10 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:28:10 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_2.parquet with scenario ID TS_SCN_01
+2024-09-11 21:28:10 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_20.parquet
+2024-09-11 21:28:10 - INFO - Read 1073 rows from Parquet_Data/157/trxn_data_chunk_20.parquet
+2024-09-11 21:28:10 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:28:10 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:28:10 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:28:10 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:28:10 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:14 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:28:15 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:28:15 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:28:15 - INFO - Total alerts found - 2
+2024-09-11 21:28:15 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:28:15 - INFO - Generated alert transaction table with 6 rows.
+2024-09-11 21:28:15 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:28:15 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:28:15 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:15 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:28:19 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('e4Af5593C629DE8', 'dEefE89909134eb')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:28:19 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:24 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:28:24 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:28:24 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:28:24 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_20.parquet with scenario ID TS_SCN_01
+2024-09-11 21:28:24 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_21.parquet
+2024-09-11 21:28:24 - INFO - Read 1056 rows from Parquet_Data/157/trxn_data_chunk_21.parquet
+2024-09-11 21:28:24 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:28:24 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:28:24 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:28:24 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:28:24 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:29 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:28:29 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:28:29 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:28:29 - INFO - Total alerts found - 1
+2024-09-11 21:28:29 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:28:29 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:28:29 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:28:29 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:28:29 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:29 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:28:34 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('e7dc0Fec5B8CbAC')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:28:34 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:39 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:28:39 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:28:39 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:28:39 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_21.parquet with scenario ID TS_SCN_01
+2024-09-11 21:28:39 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_22.parquet
+2024-09-11 21:28:39 - INFO - Read 1163 rows from Parquet_Data/157/trxn_data_chunk_22.parquet
+2024-09-11 21:28:39 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:28:39 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:28:39 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:28:39 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:28:39 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:43 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:28:43 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:28:43 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:28:44 - INFO - Total alerts found - 2
+2024-09-11 21:28:44 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:28:44 - INFO - Generated alert transaction table with 6 rows.
+2024-09-11 21:28:44 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:28:44 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:28:44 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:44 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:28:47 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('eD7bCD4Abd28A27', 'ef992B7FaFACf1e')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:28:48 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:52 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:28:52 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:28:52 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:28:52 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_22.parquet with scenario ID TS_SCN_01
+2024-09-11 21:28:52 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_23.parquet
+2024-09-11 21:28:52 - INFO - Read 1042 rows from Parquet_Data/157/trxn_data_chunk_23.parquet
+2024-09-11 21:28:52 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:28:52 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:28:52 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:28:52 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:28:52 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:57 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:28:57 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:28:57 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:28:57 - INFO - Total alerts found - 2
+2024-09-11 21:28:57 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:28:57 - INFO - Generated alert transaction table with 6 rows.
+2024-09-11 21:28:57 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:28:57 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:28:57 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:28:57 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:29:01 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('f7Cc2b7Ec9D1A6D', 'f7eBC2C99db3E65')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:29:01 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:06 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:29:06 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:29:06 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:29:06 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_23.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:06 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_24.parquet
+2024-09-11 21:29:06 - INFO - Read 1064 rows from Parquet_Data/157/trxn_data_chunk_24.parquet
+2024-09-11 21:29:06 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:06 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:06 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:06 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:06 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:10 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:29:11 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:29:11 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:29:11 - INFO - No Alerts found!
+2024-09-11 21:29:11 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:29:11 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_24.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:11 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_25.parquet
+2024-09-11 21:29:11 - INFO - Read 0 rows from Parquet_Data/157/trxn_data_chunk_25.parquet
+2024-09-11 21:29:11 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:11 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:11 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:11 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:11 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:15 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:29:16 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:29:16 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:29:16 - INFO - No Alerts found!
+2024-09-11 21:29:16 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:29:16 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_25.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:16 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_3.parquet
+2024-09-11 21:29:16 - INFO - Read 1076 rows from Parquet_Data/157/trxn_data_chunk_3.parquet
+2024-09-11 21:29:16 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:16 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:16 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:16 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:16 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:20 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:29:20 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:29:20 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:29:20 - INFO - Total alerts found - 1
+2024-09-11 21:29:20 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:29:20 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:29:20 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:29:20 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:29:20 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:20 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:29:25 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('2f5FA2cedaAF1dF')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:29:25 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:29 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:29:30 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:29:30 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:29:30 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_3.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:30 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_4.parquet
+2024-09-11 21:29:30 - INFO - Read 1068 rows from Parquet_Data/157/trxn_data_chunk_4.parquet
+2024-09-11 21:29:30 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:30 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:30 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:30 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:30 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:34 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:29:35 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:29:35 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:29:35 - INFO - Total alerts found - 1
+2024-09-11 21:29:35 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:29:35 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:29:35 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:29:35 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:29:35 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:35 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:29:39 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('3c7a56E86DDEC6f')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:29:39 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:44 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:29:44 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:29:44 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:29:44 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_4.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:44 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_5.parquet
+2024-09-11 21:29:44 - INFO - Read 1113 rows from Parquet_Data/157/trxn_data_chunk_5.parquet
+2024-09-11 21:29:44 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:44 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:44 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:44 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:44 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:48 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:29:48 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:29:48 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:29:48 - INFO - Total alerts found - 1
+2024-09-11 21:29:48 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:29:48 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:29:48 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:29:48 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:29:48 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:48 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:29:53 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('51888E9Ed5452fD')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:29:53 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:29:57 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:29:58 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:29:58 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:29:58 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_5.parquet with scenario ID TS_SCN_01
+2024-09-11 21:29:58 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_6.parquet
+2024-09-11 21:29:58 - INFO - Read 1085 rows from Parquet_Data/157/trxn_data_chunk_6.parquet
+2024-09-11 21:29:58 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:29:58 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:29:58 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:29:58 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:29:58 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:02 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:30:02 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:30:02 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:30:02 - INFO - Total alerts found - 3
+2024-09-11 21:30:02 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:30:02 - INFO - Generated alert transaction table with 9 rows.
+2024-09-11 21:30:03 - INFO - Generated evidence report with 3 rows.
+2024-09-11 21:30:03 - INFO - Generated alert customer account mapping table with 3 rows.
+2024-09-11 21:30:03 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:03 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:30:07 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('5e3cbb8DA54Aec0', '5a8e62e46C76Aa9', '57744fddaDFaAd8')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:30:07 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:11 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:30:12 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:30:12 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:30:12 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_6.parquet with scenario ID TS_SCN_01
+2024-09-11 21:30:12 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_7.parquet
+2024-09-11 21:30:12 - INFO - Read 1083 rows from Parquet_Data/157/trxn_data_chunk_7.parquet
+2024-09-11 21:30:12 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:30:12 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:30:12 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:30:12 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:30:12 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:16 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:30:17 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:30:17 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:30:17 - INFO - No Alerts found!
+2024-09-11 21:30:17 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:30:17 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_7.parquet with scenario ID TS_SCN_01
+2024-09-11 21:30:17 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_8.parquet
+2024-09-11 21:30:17 - INFO - Read 996 rows from Parquet_Data/157/trxn_data_chunk_8.parquet
+2024-09-11 21:30:17 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:30:17 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:30:17 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:30:17 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:30:17 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:21 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:30:21 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:30:21 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:30:21 - INFO - Total alerts found - 2
+2024-09-11 21:30:21 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:30:21 - INFO - Generated alert transaction table with 6 rows.
+2024-09-11 21:30:21 - INFO - Generated evidence report with 2 rows.
+2024-09-11 21:30:21 - INFO - Generated alert customer account mapping table with 2 rows.
+2024-09-11 21:30:21 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:21 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:30:25 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('742beAa4788B1Dd', '742beAa4788B1Dd')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:30:26 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:30 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:30:30 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:30:30 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:30:30 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_8.parquet with scenario ID TS_SCN_01
+2024-09-11 21:30:30 - INFO - Reading Parquet file: Parquet_Data/157/trxn_data_chunk_9.parquet
+2024-09-11 21:30:31 - INFO - Read 1157 rows from Parquet_Data/157/trxn_data_chunk_9.parquet
+2024-09-11 21:30:31 - INFO - Importing AlertChecker class for scenario_id: TS_SCN_01
+2024-09-11 21:30:31 - INFO - ALERTCHECKER initialized successfully.
+2024-09-11 21:30:31 - INFO - Initializing AlertChecker for TS_SCN_01
+2024-09-11 21:30:31 - INFO - Importing EvidenceReportGenerator class for scenario_id: TS_SCN_01
+2024-09-11 21:30:31 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:35 - INFO - Successfully executed query: 
+                SELECT
+    A.ATTR_ID,
+    A.ATTR_NM,
+    S.SCR_GRP_TYPE,
+    S.WEIGHTAGE,
+    V.MIN_VALUE,
+    V.MAX_VALUE,
+    V.ATTR_SCORE
+FROM
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR] A
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_ATTR_VAL] V ON A.ATTR_ID = V.SCR_ATTR_ID
+LEFT JOIN
+[TS_STAR].[dbo].[TS_ALERT_SCR_GRP] S ON A.SCR_GRP_ID = S.SCR_GRP_ID
+
+                WHERE
+                A.SCENARIO_ID = 'TS_SCN_01'
+                AND (A.IS_ACTIVE IS NULL OR A.IS_ACTIVE = 'true');
+            
+2024-09-11 21:30:35 - INFO - Job ID - 157 | Alert Scoring attributes dictionary created successfully!
+2024-09-11 21:30:35 - INFO - High Risk Geography (Customer) AlertRiskScoring has been initialized.
+2024-09-11 21:30:35 - INFO - Total alerts found - 1
+2024-09-11 21:30:35 - INFO - Successfully processed data with ALERTCHECKER.
+2024-09-11 21:30:35 - INFO - Generated alert transaction table with 3 rows.
+2024-09-11 21:30:35 - INFO - Generated evidence report with 1 rows.
+2024-09-11 21:30:35 - INFO - Generated alert customer account mapping table with 1 rows.
+2024-09-11 21:30:35 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:35 - INFO - High Risk Geography (Customer) : calculating Prior Alert Scores.
+2024-09-11 21:30:39 - INFO - Successfully executed query: 
+                    SELECT
+    TS_ALERT.ALERT_ID,
+    TS_ALERT.ALERT_TX,
+    TS_ALERT.PREV_MATCH_CT_ALL,
+    TS_ALERT.PREV_MATCH_CT,
+    TS_ALERT.SCENARIO_ID,
+    UPPER(TS_STATUS.STATUS) AS STATUS_CD,
+    --TS_ALERT_CUST
+    TS_ALERT_CUST.CUST_ID,
+    TS_ALERT_CUST.ACCT_ID,
+
+    TS_ALERT_INVGTN.AUTO_REASN_FL,
+    TS_ALERT_CASE.ALERT_INVSTN_ID,
+    TS_SAR_CASE.CASE_ID,
+    TS_SAR.SAR_ID
+FROM
+    TS_ALERT
+LEFT JOIN
+    TS_ALERT_CUST ON TS_ALERT.ALERT_ID = TS_ALERT_CUST.ALERT_ID
+LEFT JOIN
+    TS_ALERT_INVGTN ON TS_ALERT_INVGTN.ALERT_ID = TS_ALERT.ALERT_ID
+LEFT JOIN
+    TS_ALERT_CASE ON TS_ALERT_INVGTN.ALERT_INVSTN_ID = TS_ALERT_CASE.ALERT_INVSTN_ID
+--JOIN
+    --TS_CASE ON TS_ALERT_CASE.CASE_ID = TS_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR_CASE ON TS_ALERT_CASE.CASE_ID = TS_SAR_CASE.CASE_ID
+LEFT JOIN
+    TS_SAR ON TS_SAR_CASE.SAR_ID = TS_SAR.SAR_ID
+LEFT JOIN
+    TS_STATUS ON TS_STATUS.STATUS_ID = TS_ALERT_INVGTN.STATUS_ID
+                    WHERE
+                    TS_ALERT_CUST.CUST_ID IN ('8Af851Cf93EfE8c')
+                    AND TS_ALERT.CREATED_DATE >= '2024-03-11'
+                
+2024-09-11 21:30:40 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-11 21:30:44 - INFO - Successfully executed query: SELECT * FROM TS_COUNTRY
+2024-09-11 21:30:45 - INFO - Scenario - High Risk Geography (Customer) | Country risk flags fetched successfully.
+2024-09-11 21:30:45 - INFO - Scenario - High Risk Geography (Customer) | Country risk score calculated successfully.
+2024-09-11 21:30:45 - INFO - Successfully processed Parquet file Parquet_Data/157/trxn_data_chunk_9.parquet with scenario ID TS_SCN_01
+2024-09-11 21:30:45 - INFO - Pipeline execution completed successfully.

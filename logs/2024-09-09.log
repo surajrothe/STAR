@@ -1,0 +1,122 @@
+2024-09-09 23:59:38 - INFO - Received request to start pipeline with details: {'job_id': 157, 'job_name': 'High Risk Geography (Customer)', 'scenario_ids': ['TS_SCN_01'], 'trigger_by': 'DS_TEAM'}
+2024-09-09 23:59:38 - INFO - Starting customer ID retrieval.
+2024-09-09 23:59:38 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-09 23:59:49 - INFO - Successfully executed query: SELECT CUST_ID FROM TS_CUST ORDER BY CUST_ID
+2024-09-09 23:59:50 - INFO - Successfully fetched 125001 customer IDs.
+2024-09-09 23:59:50 - INFO - Starting scenario data retrieval.
+2024-09-09 23:59:50 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-09 23:59:50 - INFO - Fetching scenario configuration data
+2024-09-09 23:59:53 - INFO - Successfully executed query: 
+        SELECT
+            TS_SCENARIO.SCENARIO_ID,
+            TS_SCENARIO.SCENARIO_NM,
+            TS_SCENARIO.ALERT_TYPE_ID,
+            TS_SCENARIO.SCENARIO_FOCUS,
+            TS_SCENARIO.SCENARIO_FREQUENCY,
+            TS_SCENARIO.STATUS_ID AS SCENARIO_STATUS_ID,
+            TS_SCN_CONFIG.CONFIG_ID,
+            TS_SCN_CONFIG.SQL_TX,
+            TS_SCN_CONFIG.CONFIG_TYPE_CD,
+            TS_SCN_CONFIG.STATUS_ID AS CONFIG_STATUS_ID,
+            SCENARIO_STATUS.STATUS_NAME AS SCENARIO_STATUS_NAME,
+            CONFIG_STATUS.STATUS_NAME AS CONFIG_STATUS_NAME
+        FROM TS_SCENARIO
+        LEFT JOIN TS_SCN_CONFIG ON TS_SCENARIO.SCENARIO_ID = TS_SCN_CONFIG.SCENARIO_ID
+        LEFT JOIN TS_STATUS AS SCENARIO_STATUS ON TS_SCENARIO.STATUS_ID = SCENARIO_STATUS.STATUS_ID
+        LEFT JOIN TS_STATUS AS CONFIG_STATUS ON TS_SCN_CONFIG.STATUS_ID = CONFIG_STATUS.STATUS_ID
+        WHERE TS_SCENARIO.SCENARIO_ID IN ('TS_SCN_01')
+        
+2024-09-09 23:59:54 - INFO - Starting threshold data retrieval.
+2024-09-09 23:59:54 - INFO - Creating SQLAlchemy engine for database connection.
+2024-09-09 23:59:54 - INFO - SQLQueryExecutor initialized successfully.
+2024-09-09 23:59:54 - INFO - Fetching threshold configuration data.
+2024-09-09 23:59:54 - DEBUG - Processing scenario ID: TS_SCN_01
+2024-09-09 23:59:54 - DEBUG - Executing SQL query for scenario ID TS_SCN_01: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-09 23:59:58 - INFO - Successfully executed query: 
+    SELECT
+        TS_THRESHOLD_SET.THRESHOLD_SET_ID,
+        TS_THRESHOLD.THRESHOLD_VALUE,
+        TS_THRESHOLD_TYPE.DPLY_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_NM,
+        TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID,
+        TS_THRESHOLD_TYPE.SCENARIO_ID
+    FROM TS_THRESHOLD_SET
+    JOIN TS_THRESHOLD ON TS_THRESHOLD_SET.THRESHOLD_SET_ID = TS_THRESHOLD.THRESHOLD_SET_ID
+    JOIN TS_THRESHOLD_TYPE ON TS_THRESHOLD_TYPE.SCENARIO_ID = TS_THRESHOLD_SET.SCENARIO_ID
+    AND TS_THRESHOLD_TYPE.THRESHOLD_TYPE_ID = TS_THRESHOLD.THRESHOLD_TYPE_ID
+    WHERE TS_THRESHOLD_TYPE.SCENARIO_ID = 'TS_SCN_01'
+     AND IS_ACTIVE = 1
+2024-09-09 23:59:59 - INFO - Threshold data fetching completed successfully.
+2024-09-09 23:59:59 - INFO - Starting customer ID processing.
+2024-09-09 23:59:59 - INFO - Initializing Spark session with JDBC configurations.
+2024-09-10 00:00:02 - INFO - Spark session initialized successfully.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:02 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:31 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_6.parquet
+2024-09-10 00:00:31 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:31 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_0.parquet
+2024-09-10 00:00:31 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:34 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_5.parquet
+2024-09-10 00:00:34 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:36 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_4.parquet
+2024-09-10 00:00:36 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:46 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_18.parquet
+2024-09-10 00:00:46 - INFO - Fetching transaction data for 5000 customers.
+2024-09-10 00:00:49 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_2.parquet
+2024-09-10 00:00:49 - INFO - Fetching transaction data for 1 customers.
+2024-09-10 00:00:49 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_13.parquet
+2024-09-10 00:00:50 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_1.parquet
+2024-09-10 00:00:51 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_11.parquet
+2024-09-10 00:00:52 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_7.parquet
+2024-09-10 00:00:59 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_25.parquet
+2024-09-10 00:01:00 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_8.parquet
+2024-09-10 00:01:01 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_19.parquet
+2024-09-10 00:01:04 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_9.parquet
+2024-09-10 00:01:13 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_23.parquet
+2024-09-10 00:01:17 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_16.parquet
+2024-09-10 00:01:19 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_14.parquet
+2024-09-10 00:01:19 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_17.parquet
+2024-09-10 00:01:19 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_3.parquet
+2024-09-10 00:01:30 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_24.parquet
+2024-09-10 00:01:39 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_15.parquet
+2024-09-10 00:02:13 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_12.parquet
+2024-09-10 00:02:21 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_10.parquet
+2024-09-10 00:02:29 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_20.parquet
+2024-09-10 00:02:33 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_21.parquet
+2024-09-10 00:02:42 - INFO - Data saved to Parquet file: /home/hackit/Desktop/TM/SCENARIO_SPARK/TS_TRXN_MONITORING_SPARK/Parquet_Data/default/trxn_data_chunk_22.parquet
+2024-09-10 00:02:42 - INFO - All customer chunks processed.
+2024-09-10 00:02:43 - INFO - Spark session stopped.
+2024-09-10 00:02:43 - INFO - Starting Parquet files processing.
+2024-09-10 00:02:43 - INFO - No Parquet files found to process.
+2024-09-10 00:02:43 - INFO - Pipeline execution completed successfully.

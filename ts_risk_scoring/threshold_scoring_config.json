@@ -1,0 +1,203 @@
+{
+    "TS_SCN_20": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL CASH CREDIT AMOUNT",
+                "data_column": "CASH_CREDIT_AMT",
+                "default_value": 0
+            },
+            {
+                "ars_tx_source_field": "TOTAL WIRE DEBIT AMOUNT",
+                "data_column": "WIRE_DEBIT_AMT",
+                "default_value": 0
+            }        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "AGGREGATE CASH CREDIT AMT",
+                "threshold_column": "CASH_CREDIT_THRESHOLD",
+                "deviation_column": "Deviation cash credit Amount(%)",
+                "score_column": "CASH CREDIT SCORE",
+                "ars_attribute_name": "AGG_CASH_CREDIT_AMT",
+                "data_column": "CASH_CREDIT_AMT",
+                "deviation_type": "calculate_deviation"
+
+            },
+            {
+                "threshold_name": "AGGREGATE WIRE DEBIT AMT",
+                "threshold_column": "WIRE_DEBIT_THRESHOLD",
+                "deviation_column": "Deviation wire debit Amount(%)",
+                "score_column": "WIRE DEBIT SCORE",
+                "ars_attribute_name": "AGG_WIRE_DEBIT_AMT",
+                "data_column": "WIRE_DEBIT_AMT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_01": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL HRG TRXN AMOUNT",
+                "data_column": "TOTAL_HRG_TRXN_AMOUNT",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "HRG TRXN AMOUNT",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "TOTAL HRG Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "HRG_TRXN_AMT",
+                "data_column": "TOTAL_HRG_TRXN_AMOUNT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_30": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL TRXN AMOUNT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "MIN TRXN AMOUNT",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "TOTAL Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "AGGREGATE_AMT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_29": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL TRXN AMOUNT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "MIN TRXN AMOUNT",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "TOTAL Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "AGGREGATE_AMT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_28": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL TRXN AMOUNT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "MIN TRXN AMOUNT",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "TOTAL Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "AGGREGATE_AMT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_12": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL TRXN AMOUNT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "MIN TRXN AMOUNT",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "TOTAL Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "AGGREGATE_AMT",
+                "data_column": "TOTAL_TRXN_AMT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_06": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "MAX TRANS AMOUNT",
+                "data_column": "MAX_TRANS_AMOUNT",
+                "default_value": 0
+            },
+            {
+                "ars_tx_source_field": "MAX FLAG",
+                "data_column": "MAX_FLAG",
+                "default_value": 0
+            }
+        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "eval:'CREDIT TRANS AMOUNT' if row['MAX_FLAG'] == 'CREDIT' else 'DEBIT TRANS AMOUNT'",
+                "threshold_column": "AMOUNT_THRESHOLD",
+                "deviation_column": "Deviation Amount(%)",
+                "score_column": "AMOUNT SCORE",
+                "ars_attribute_name": "AGGREGATE_AMOUNT",
+                "data_column": "MAX_TRANS_AMOUNT",
+                "deviation_type": "calculate_deviation"
+
+            }
+        ]
+    },
+    "TS_SCN_05": {
+        "fields_config": [
+            {
+                "ars_tx_source_field": "TOTAL DEBIT SUM",
+                "result_column": "TOTAL_DEBIT_SUM",
+                "default_value": 0
+            },
+            {
+                "ars_tx_source_field": "TOTAL TRANSACTIONS",
+                "result_column": "TRANSACTION_COUNT",
+                "default_value": 0
+            }        ],
+        "thresholds_config": [
+            {
+                "threshold_name": "MIN DEBIT AMOUNT",
+                "threshold_column": "MIN_DEBIT_THRESHOLD",
+                "deviation_column": "Deviation Debit Amount(%)",
+                "score_column": "DEBIT SCORE",
+                "ars_attribute_name": "MIN_DEBIT_AMOUNT",
+                "data_column": "TOTAL_DEBIT_SUM",
+                "deviation_type": "calculate_deviation"
+
+            },
+            {
+                "threshold_name": "MIN TRANSACTION COUNT",
+                "threshold_column": "TRANSACTION_CT_THRESHOLD",
+                "deviation_column": "Change Transaction Ct",
+                "score_column": "TRANSACTION SCORE",
+                "ars_attribute_name": "MIN_TRANSACTIONS",
+                "data_column": "TRANSACTION_COUNT",
+                "deviation_type": "calculate_change"
+
+            }
+        ]
+    }
+}
